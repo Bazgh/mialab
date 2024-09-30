@@ -3,7 +3,7 @@
 Image pre-processing aims to improve the image quality (image intensities) for subsequent pipeline steps.
 """
 import warnings
-
+import numpy as np
 import pymia.filtering.filter as pymia_fltr
 import SimpleITK as sitk
 
@@ -31,8 +31,15 @@ class ImageNormalization(pymia_fltr.Filter):
         # todo: normalize the image using numpy
         warnings.warn('No normalization implemented. Returning unprocessed image.')
 
-        img_out = sitk.GetImageFromArray(img_arr)
+        #z_score Normalization
+        img_mean = img_arr.mean()
+        img_std = img_arr.std()
+        epsilon=1e-6
+        img_norm = (img_arr - img_mean) / max(img_std,epsilon)
+
+        img_out = sitk.GetImageFromArray(img_norm)
         img_out.CopyInformation(image)
+
 
         return img_out
 
@@ -80,7 +87,14 @@ class SkullStripping(pymia_fltr.Filter):
         # todo: remove the skull from the image by using the brain mask
         warnings.warn('No skull-stripping implemented. Returning unprocessed image.')
 
-        return image
+        img_arr=sitk.GetArrayFromImage(image)
+        mask_arr = sitk.GetArrayFromImage(mask)
+        #binary mask
+        mask_bin = (mask_arr > 0).astype(img_arr.dtype)
+        img_skull_stripped=img_arr*mask_bin
+        image_out=sitk.GetImageFromArray(img_skull_stripped)
+        image_out.CopyInformation(image)
+        return image_out
 
     def __str__(self):
         """Gets a printable string representation.
