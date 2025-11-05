@@ -3,9 +3,9 @@
 Image pre-processing aims to improve the image quality (image intensities) for subsequent pipeline steps.
 """
 import warnings
-import numpy as np
-import pymia.filtering.filter as pymia_fltr
+
 import SimpleITK as sitk
+import pymia.filtering.filter as pymia_fltr
 
 
 class ImageNormalization(pymia_fltr.Filter):
@@ -29,17 +29,16 @@ class ImageNormalization(pymia_fltr.Filter):
         img_arr = sitk.GetArrayFromImage(image)
 
         # todo: normalize the image using numpy
-        warnings.warn('No normalization implemented. Returning unprocessed image.')
+        # warnings.warn('No normalization implemented. Returning unprocessed image.')
 
-        #z_score Normalization
+        # z_score Normalization
         img_mean = img_arr.mean()
         img_std = img_arr.std()
-        epsilon=1e-6
-        img_norm = (img_arr - img_mean) / max(img_std,epsilon)
+        epsilon = 1e-6
+        img_norm = (img_arr - img_mean) / max(img_std, epsilon)
 
         img_out = sitk.GetImageFromArray(img_norm)
         img_out.CopyInformation(image)
-
 
         return img_out
 
@@ -85,14 +84,14 @@ class SkullStripping(pymia_fltr.Filter):
         mask = params.img_mask  # the brain mask
 
         # todo: remove the skull from the image by using the brain mask
-        warnings.warn('No skull-stripping implemented. Returning unprocessed image.')
+        # warnings.warn('No skull-stripping implemented. Returning unprocessed image.')
 
-        img_arr=sitk.GetArrayFromImage(image)
+        img_arr = sitk.GetArrayFromImage(image)
         mask_arr = sitk.GetArrayFromImage(mask)
-        #binary mask
+        # binary mask
         mask_bin = (mask_arr > 0).astype(img_arr.dtype)
-        img_skull_stripped=img_arr*mask_bin
-        image_out=sitk.GetImageFromArray(img_skull_stripped)
+        img_skull_stripped = img_arr * mask_bin
+        image_out = sitk.GetImageFromArray(img_skull_stripped)
         image_out.CopyInformation(image)
         return image_out
 
@@ -143,7 +142,7 @@ class ImageRegistration(pymia_fltr.Filter):
         # todo: replace this filter by a registration. Registration can be costly, therefore, we provide you the
         # transformation, which you only need to apply to the image!
         warnings.warn('No registration implemented. Returning unregistered image')
-#
+        #
         atlas = params.atlas
         transform = params.transformation
         is_ground_truth = params.is_ground_truth  # the ground truth will be handled slightly different
