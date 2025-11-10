@@ -11,6 +11,9 @@ import warnings
 
 import SimpleITK as sitk
 import sklearn.ensemble as sk_ensemble
+from deep_utils import StringUtils
+from sklearn.model_selection import RandomizedSearchCV
+from scipy.stats import uniform, randint
 import numpy as np
 import pymia.data.conversion as conversion
 import pymia.evaluation.writer as writer
@@ -66,12 +69,12 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
                           'gradient_intensity_feature': True}
 
     # load images for training and pre-process
-    images = putil.pre_process_batch(crawler.data, pre_process_params, multi_process=False)
-    import numpy as np
+    images = putil.pre_process_batch(crawler.data, pre_process_params, multi_process=True)
 
     for i, img in enumerate(images):
         # Assuming img.image is a SimpleITK or NumPy array
-        voxels = img.image_array if hasattr(img, 'image_array') else img.image  # adapt if needed
+        voxels = img.image_array if hasattr(img, 'image_array') else sitk.GetArrayFromImage(
+            img.images[structure.BrainImageTypes.T1w])  # adapt if needed
 
         voxels_np = np.asarray(voxels).astype(np.float32)
 
@@ -86,29 +89,19 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
     data_train = np.concatenate([img.feature_matrix[0] for img in images])
     labels_train = np.concatenate([img.feature_matrix[1] for img in images]).squeeze()
 
-    warnings.warn('Random forest parameters not properly set.')
+    # warnings.warn('Random forest parameters not properly set.')
     forest = sk_ensemble.RandomForestClassifier(max_features=images[0].feature_matrix[0].shape[1],
-                                                n_estimators=1,
+                                                n_estimators=10,
                                                 max_depth=5)
-    #CNN model
-    #ToDo
-    #input [batchsize,pixelsize]
-    #layer1 [pixelsise,64]
-    #RELU
-    #layer 2 [64,128]
-    #RELU
-    #layer 3 [128,256]
-    #RELU
-    # layer 4 [256,128]
-    # RELU
-    #fully connected
-    #[128,n_classes]
-    #problems: this is for normal phtos where intensity varies significantly accross pixels
-    #and objects(classes) are distinguishable by some featured that CNN can find.
-    # but in MRI BRain data a minor change id texture, intensitu,etc means a new class.
-    #Does DL feature extraction helps in finding high level features?
-    #do we know the number of classes?
+    distributions = dict(max_depth=randint(low=5, high=20),
+                         n_estimators=randint(low=10, high=100))
 
+    clf = RandomizedSearchCV(forest, distributions, random_state=0, n_iter=20)
+    StringUtils.print("Let's do the search", color="Green")
+    search = clf.fit(data_train, labels_train)
+
+    print(search.best_params_) # --> {'max_depth': 17, 'n_estimators': 57}
+    exit(0)
     start_time = timeit.default_timer()
     forest.fit(data_train, labels_train)
     print(' Time elapsed:', timeit.default_timer() - start_time, 's')
@@ -131,7 +124,7 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
 
     # load images for testing and pre-process
     pre_process_params['training'] = False
-    images_test = putil.pre_process_batch(crawler.data, pre_process_params, multi_process=False)
+    images_test = putil.pre_process_batch(crawler.data, pre_process_params, multi_process=True)
 
     images_prediction = []
     images_probabilities = []
