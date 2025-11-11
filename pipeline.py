@@ -19,6 +19,7 @@ from scipy.stats import uniform, randint
 import numpy as np
 import pymia.data.conversion as conversion
 import pymia.evaluation.writer as writer
+from tensorflow.python.keras.backend import epsilon
 
 try:
     import mialab.data.structure as structure
@@ -91,6 +92,10 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
     data_train = np.concatenate([img.feature_matrix[0] for img in images])
     labels_train = np.concatenate([img.feature_matrix[1] for img in images]).squeeze()
 
+    #Feature Normalization
+    mean = np.mean(data_train, axis=0)
+    std = np.std(data_train, axis=0)
+    data_train = (data_train - mean) / np.maximum(std, epsilon)
     # warnings.warn('Random forest parameters not properly set.')
     cls = sk_ensemble.RandomForestClassifier(max_features=images[0].feature_matrix[0].shape[1],
                                                 n_estimators=57,
@@ -135,10 +140,12 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
 
     for img in images_test:
         print('-' * 10, 'Testing', img.id_)
-
+        #normalizing test features using training statistics
+        features = img.feature_matrix[0]
+        features = (features - mean) / np.maximum(std, epsilon)
         start_time = timeit.default_timer()
-        predictions = cls.predict(img.feature_matrix[0])
-        probabilities = cls.predict_proba(img.feature_matrix[0])
+        predictions = cls.predict(features)
+        probabilities = cls.predict_proba(features)
         print(' Time elapsed:', timeit.default_timer() - start_time, 's')
 
         # convert prediction and probabilities back to SimpleITK images
