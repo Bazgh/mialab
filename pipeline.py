@@ -19,7 +19,6 @@ from scipy.stats import uniform, randint
 import numpy as np
 import pymia.data.conversion as conversion
 import pymia.evaluation.writer as writer
-from tensorflow.python.keras.backend import epsilon
 
 try:
     import mialab.data.structure as structure
@@ -95,7 +94,7 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
     #Feature Normalization
     mean = np.mean(data_train, axis=0)
     std = np.std(data_train, axis=0)
-    data_train = (data_train - mean) / np.maximum(std, epsilon)
+    data_train = (data_train - mean) / np.maximum(std, 1e-6)
     # warnings.warn('Random forest parameters not properly set.')
     cls = sk_ensemble.RandomForestClassifier(max_features=images[0].feature_matrix[0].shape[1],
                                                 n_estimators=57,
@@ -142,7 +141,7 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
         print('-' * 10, 'Testing', img.id_)
         #normalizing test features using training statistics
         features = img.feature_matrix[0]
-        features = (features - mean) / np.maximum(std, epsilon)
+        features = (features - mean) / np.maximum(std, 1e-6)
         start_time = timeit.default_timer()
         predictions = cls.predict(features)
         probabilities = cls.predict_proba(features)
