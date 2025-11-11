@@ -11,6 +11,8 @@ import warnings
 
 import SimpleITK as sitk
 import sklearn.ensemble as sk_ensemble
+from sklearn import svm
+from sklearn.utils.class_weight import compute_class_weight
 from deep_utils import StringUtils
 from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import uniform, randint
@@ -90,20 +92,22 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
     labels_train = np.concatenate([img.feature_matrix[1] for img in images]).squeeze()
 
     # warnings.warn('Random forest parameters not properly set.')
-    forest = sk_ensemble.RandomForestClassifier(max_features=images[0].feature_matrix[0].shape[1],
-                                                n_estimators=10,
-                                                max_depth=5)
-    distributions = dict(max_depth=randint(low=5, high=20),
-                         n_estimators=randint(low=10, high=100))
-
-    clf = RandomizedSearchCV(forest, distributions, random_state=0, n_iter=20)
-    StringUtils.print("Let's do the search", color="Green")
-    search = clf.fit(data_train, labels_train)
-
-    print(search.best_params_) # --> {'max_depth': 17, 'n_estimators': 57}
-    exit(0)
+    cls = sk_ensemble.RandomForestClassifier(max_features=images[0].feature_matrix[0].shape[1],
+                                                n_estimators=57,
+                                                max_depth=17,
+                                                class_weight='balanced')
+    # cls = svm.SVC(kernel="rbf", )
+    # distributions = dict(max_depth=randint(low=5, high=20),
+    #                      n_estimators=randint(low=10, high=100))
+    #
+    # clf = RandomizedSearchCV(cls, distributions, random_state=0, n_iter=5, cv=5)
+    # StringUtils.print("Let's do the search", color="Green")
+    # search = clf.fit(data_train, labels_train)
+    #
+    # print(search.best_params_) # --> {'max_depth': 19, 'n_estimators': 89}, {'max_depth': 17, 'n_estimators': 57}
+    # exit(0)
     start_time = timeit.default_timer()
-    forest.fit(data_train, labels_train)
+    cls.fit(data_train, labels_train)
     print(' Time elapsed:', timeit.default_timer() - start_time, 's')
 
     # create a result directory with timestamp
@@ -133,8 +137,8 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
         print('-' * 10, 'Testing', img.id_)
 
         start_time = timeit.default_timer()
-        predictions = forest.predict(img.feature_matrix[0])
-        probabilities = forest.predict_proba(img.feature_matrix[0])
+        predictions = cls.predict(img.feature_matrix[0])
+        probabilities = cls.predict_proba(img.feature_matrix[0])
         print(' Time elapsed:', timeit.default_timer() - start_time, 's')
 
         # convert prediction and probabilities back to SimpleITK images
