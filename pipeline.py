@@ -96,19 +96,21 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
     std = np.std(data_train, axis=0)
     data_train = (data_train - mean) / np.maximum(std, 1e-6)
     # warnings.warn('Random forest parameters not properly set.')
-    cls = sk_ensemble.RandomForestClassifier(max_features=images[0].feature_matrix[0].shape[1],
-                                                n_estimators=57,
-                                                max_depth=17,
-                                                )
+    # cls = sk_ensemble.RandomForestClassifier(max_features=images[0].feature_matrix[0].shape[1],
+    #                                             n_estimators=57,
+    #                                             max_depth=17,
+    #                                             )
+    cls = sk_ensemble.ExtraTreesClassifier(n_estimators=89, max_depth=19)
     # cls = svm.SVC(kernel="rbf", )
     # distributions = dict(max_depth=randint(low=5, high=20),
     #                      n_estimators=randint(low=10, high=100))
     #
-    # clf = RandomizedSearchCV(cls, distributions, random_state=0, n_iter=5, cv=5)
+    # clf = RandomizedSearchCV(cls, distributions, random_state=0, n_iter=20, cv=5)
     # StringUtils.print("Let's do the search", color="Green")
     # search = clf.fit(data_train, labels_train)
     #
     # print(search.best_params_) # --> {'max_depth': 19, 'n_estimators': 89}, {'max_depth': 17, 'n_estimators': 57}
+    # ExtraTreesClassifier {'max_depth': 19, 'n_estimators': 89}
     # exit(0)
     start_time = timeit.default_timer()
     cls.fit(data_train, labels_train)
