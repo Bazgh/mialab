@@ -12,6 +12,7 @@ import warnings
 import SimpleITK as sitk
 import sklearn.ensemble as sk_ensemble
 from sklearn import svm
+from sklearn.utils import compute_sample_weight
 from sklearn.utils.class_weight import compute_class_weight
 from deep_utils import StringUtils
 from sklearn.model_selection import RandomizedSearchCV
@@ -19,6 +20,9 @@ from scipy.stats import uniform, randint
 import numpy as np
 import pymia.data.conversion as conversion
 import pymia.evaluation.writer as writer
+from imblearn.ensemble import BalancedRandomForestClassifier
+from tabpfn import TabPFNClassifier
+
 
 try:
     import mialab.data.structure as structure
@@ -100,8 +104,19 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
     #                                             n_estimators=57,
     #                                             max_depth=17,
     #                                             )
-    cls = sk_ensemble.ExtraTreesClassifier(n_estimators=89, max_depth=19, class_weight="balanced")
-    # cls = svm.SVC(kernel="rbf", )
+    # class_weight = compute_sample_weight("balanced", labels_train)
+    # np.save("labels_train.npy", labels_train.data)
+    # np.save("data_train.npy", data_train.data)
+    # print("class_weight", class_weight)
+    # cls = sk_ensemble.ExtraTreesClassifier(n_estimators=89, max_depth=19,
+    #                                        class_weight={0: 1, 1:1, 2:1, 3: 1, 4: 2, 5:1})
+    # cls = BalancedRandomForestClassifier(n_estimators=89, max_depth=19)
+    # Initialize a classifier
+    cls = TabPFNClassifier()  # Uses TabPFN 2.5 weights, finetuned on real data.
+    # To use TabPFN v2:
+    # clf = TabPFNClassifier.create_default_for_version(ModelVersion.V2)
+    # clf.fit(X_train, y_train)
+
     # distributions = dict(max_depth=randint(low=5, high=20),
     #                      n_estimators=randint(low=10, high=100))
     #
@@ -113,7 +128,7 @@ def main(result_dir: str, data_atlas_dir: str, data_train_dir: str, data_test_di
     # ExtraTreesClassifier {'max_depth': 19, 'n_estimators': 89}
     # exit(0)
     start_time = timeit.default_timer()
-    cls.fit(data_train, labels_train)
+    cls.fit(data_train[:10000], labels_train[:10000])
     print(' Time elapsed:', timeit.default_timer() - start_time, 's')
 
     # create a result directory with timestamp
