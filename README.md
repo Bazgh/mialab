@@ -1,10 +1,10 @@
 # Medical Image Analysis Laboratory
 
-Welcome to the medical image analysis laboratory (MIALab).
-This repository contains all code you will need to get started with classical medical image analysis.
 
-During the MIALab you will work on the task of brain tissue segmentation from magnetic resonance (MR) images.
-We have set up an entire pipeline to solve this task, specifically:
+This repository contains all codes for classical medical image analysis, and is provided by the instructor.
+
+During the MIALab we worked on the task of brain tissue segmentation from magnetic resonance (MR) images.
+The instructors have set up an entire pipeline to solve this task, specifically:
 
 - Pre-processing
 - Registration
@@ -13,17 +13,7 @@ We have set up an entire pipeline to solve this task, specifically:
 - Post-processing
 - Evaluation
 
-After you complete the exercises, dive into the 
-    
-    pipeline.py 
 
-script to learn how all of these steps work together. 
+Our Group task was on Classification, for which we explored the classical Machine Learning approaches such as Decision trees, and also embarked on Deep learning appraches with U-Net architecure.
 
-During the laboratory you will get to know the entire pipeline and investigate one of these pipeline elements in-depth.
-You will get to know and to use various libraries and software tools needed in the daily life as biomedical engineer or researcher in the medical image analysis domain.
-
-Enjoy!
-
-----
-
-Found a bug or do you have suggestions? Open an issue or better submit a pull request.
+Please find the report of our finding in MRI_Brain_Segmentation_Pooya_Zahra attached to this repo as a PDF file.
