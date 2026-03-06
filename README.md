@@ -14,6 +14,6 @@ The instructors have set up an entire pipeline to solve this task, specifically:
 - Evaluation
 
 
-Our Group task was on Classification, for which we explored the classical Machine Learning approaches such as Decision trees, and also embarked on Deep learning appraches with U-Net architecure.
+Our Group task was on Classification, for which we explored the classical Machine Learning approaches such as Decision trees, and also embarked on Deep learning approaches with U-Net architecure which led us to amazing Promising Results. 
 
 Please find the report of our finding in MRI_Brain_Segmentation_Pooya_Zahra attached to this repo as a PDF file.
