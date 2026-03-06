@@ -1,19 +1,21 @@
-# Medical Image Analysis Laboratory
+This repository contains the code developed for the Medical Image Analysis Laboratory (MIA Lab) course at the University of Bern, instructed by Maurício Reyes. The project focuses on classical medical image analysis methods for brain tissue segmentation from magnetic resonance (MR) images.
 
+During the laboratory, a complete processing pipeline was provided to address the segmentation task. The pipeline includes the following stages:
 
-This repository contains all codes for classical medical image analysis, and is provided by the instructor.
+Pre-processing
 
-During the MIALab we worked on the task of brain tissue segmentation from magnetic resonance (MR) images.
-The instructors have set up an entire pipeline to solve this task, specifically:
+Registration
 
-- Pre-processing
-- Registration
-- Feature extraction
-- Voxel-wise tissue classification
-- Post-processing
-- Evaluation
+Feature extraction
 
+Voxel-wise tissue classification
 
-Our Group task was on Classification, for which we explored the classical Machine Learning approaches such as Decision trees, and also embarked on Deep learning approaches with U-Net architecure which led us to amazing Promising Results. 
+Post-processing
 
-Please find the report of our finding in MRI_Brain_Segmentation_Pooya_Zahra attached to this repo as a PDF file.
+Evaluation
+
+Each stage contributes to preparing the data, extracting meaningful features, performing tissue classification, and evaluating segmentation performance.
+
+Our group focused specifically on the classification stage. We explored classical machine learning approaches such as Decision Trees, and also investigated deep learning methods using the U-Net architecture. The deep learning approach demonstrated promising results for brain tissue segmentation.
+
+A detailed description of our methodology, experiments, and results can be found in the report “MRI_Brain_Segmentation_Pooya_Zahra.pdf”, which is included in this repository.
