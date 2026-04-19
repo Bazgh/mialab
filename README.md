@@ -1,6 +1,6 @@
 # Medical Image Analysis Laboratory
 
-This repository contains the code developed for the **Medical Image Analysis Laboratory (MIA Lab)** course at the **University of Bern**, instructed by **Maurício Reyes**. The project focuses on classical medical image analysis methods for **brain tissue segmentation from magnetic resonance (MR) images**.
+This repository contains the code developed for the **Medical Image Analysis Laboratory (MIA Lab)** course at the **University of Bern**, instructed by **Maurício Reyes**. The project focuses on classical and modern medical image analysis methods for **brain tissue segmentation from magnetic resonance (MR) images**.
 
 ## Pipeline Overview
 
